@@ -1,0 +1,141 @@
+// Fonts
+@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+
+// Variables
+@import "variables";
+
+$header-line-height: 60px;
+
+* {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: $font-family-sans-serif;
+  font-size: $font-size-base;
+}
+
+a:link {
+  color: $main-font;
+  text-decoration:none;
+}
+a:visited {
+  color: $main-font;
+  text-decoration:none;
+}
+a:hover {
+  color: $main-font;
+  text-decoration:none;
+}
+a:active {
+  color: $main-font;
+  text-decoration:none;
+}
+
+/* --- Section --- */
+.flex-row {
+  display: flex;
+  flex-flow: row wrap;
+}
+
+.container {
+  margin:0 auto;
+  width: 1250px;
+}
+
+.occupy1 {
+  flex:0 0 5%;
+}
+.occupy2 {
+  flex:0 0 10%;
+}
+.occupy3 {
+  flex:0 0 15%;
+}
+.occupy4 {
+  flex:0 0 20%;
+}
+.occupy5 {
+  flex:0 0 25%;
+}
+.occupy6 {
+  flex:0 0 30%;
+}
+.occupy7 {
+  flex:0 0 35%;
+}
+.occupy8 {
+  flex:0 0 40%;
+}
+.occupy9 {
+  flex:0 0 45%;
+}
+.occupy10 {
+  flex:0 0 50%;
+}
+.occupy11 {
+  flex:0 0 55%;
+}
+.occupy12 {
+  flex:0 0 60%;
+}
+.occupy13 {
+  flex:0 0 65%;
+}
+.occupy14 {
+  flex:0 0 70%;
+}
+.occupy15 {
+  flex:0 0 75%;
+}
+.occupy16 {
+  flex:0 0 80%;
+}
+.occupy17 {
+  flex:0 0 85%;
+}
+.occupy18 {
+  flex:0 0 90%;
+}
+.occupy19 {
+  flex:0 0 95%;
+}
+.occupy20 {
+  flex:0 0 100%;
+}
+
+.button-blue {
+  background-color: #67a7ff;
+  color: #f5f5f5;
+  padding: 5px 10px;
+  margin: 4px 6px;
+  border: none;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 1rem;
+}
+
+/* --- Class --- */
+.header {
+  margin-bottom: 12px;
+  background-color: $main-bg;
+  color: #858585;
+  text-align: center;
+  line-height: $header-line-height;
+  box-shadow:0 -2px 8px #b2b2b2 inset;
+}
+
+.footer {
+  font-size: 0.75rem;
+  background-color: $footer-bg;
+  color: #858585;
+  text-align: center;
+  line-height: 30px;
+}
+
+.none-li {
+  list-style-type: none;
+}
