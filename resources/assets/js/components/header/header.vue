@@ -2,21 +2,9 @@
     <div class="flex-row header">
         <div class="occupy3">Logo</div>
         <div class="occupy16 menu">
-            <span :class="menu[1].class" @click="choiceMenu(1)">
-                <router-link to="/home" class="menu-item">首页</router-link>
+            <span v-for="item in menuList" :class="menu[item.id].class" @click="choiceMenu(item.id)">
+                <a :href="item.to" class="menu-item">{{ item.text }}</a>
             </span>
-
-            <!--<span :class="menu[2].class" @click="choiceMenu(2)">-->
-                <!--<router-link to="/building" class="menu-item">工作清单</router-link>-->
-            <!--</span>-->
-
-            <!--<span :class="menu[3].class" @click="choiceMenu(3)">-->
-                <!--<router-link to="/tomato-time" class="menu-item">番茄时间</router-link>-->
-            <!--</span>-->
-
-            <!--<span :class="menu[4].class" @click="choiceMenu(4)">-->
-                <!--<router-link to="/data-stats" class="menu-item">数据统计</router-link>-->
-            <!--</span>-->
         </div>
         <div class="avatar"></div>
     </div>
@@ -33,7 +21,10 @@
           { class: 'menu-unactive' },
           { class: 'menu-unactive' },
           { class: 'menu-unactive' },
-        ]
+        ],
+        menuList: [
+          { id: 1, to: '#/outside', text: '首页' },
+        ],
       }
     },
     props: {
@@ -49,32 +40,39 @@
       }
     },
     created() {
+      if (localStorage.getItem('loginCheck') === 'true') {
+        this.menuList = [
+          {id: 1, to: '#/home', text: '领地'},
+          {id: 2, to: '#/building', text: '建筑'},
+        ]
+      } else {
+        this.menuList = [
+          {id: 1, to: '#/outside', text: '首页'},
+        ]
+      }
+
       let preg = /#\/(.+)/i;
       let url = window.location.href;
       let result = url.match(preg)
       let selectId = 1
+      // console.info(result)
       result = (result === null) ? '' : result[1]
 
       switch (result) {
-        case 'home':
+        case 'outside':
           selectId = 1
           this.menu[0].last = selectId
           this.menu[1].class = 'menu-active'
           break;
-        case 'work-list':
+        case 'home':
           selectId = 2
           this.menu[0].last = selectId
           this.menu[2].class = 'menu-active'
           break;
-        case 'tomato-time':
+        case 'building':
           selectId = 3
           this.menu[0].last = selectId
           this.menu[3].class = 'menu-active'
-          break;
-        case 'data-stats':
-          selectId = 4
-          this.menu[0].last = selectId
-          this.menu[selectId].class = 'menu-active'
           break;
         default:
           this.menu[0].last = selectId
@@ -87,7 +85,8 @@
 
 <style type="text/scss" scoped>
     .menu {
-        font-size: 1.1rem;
+        font-size: 1.2rem;
+        font-weight:500;
         line-height: 70px;
         text-align: left;
     }

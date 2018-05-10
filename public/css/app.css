@@ -1,4 +1,6 @@
-@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);* {
+@import url(https://fonts.googleapis.com/css?family=Raleway:300,400,600);@charset "UTF-8";
+
+* {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
   margin: 0;
@@ -167,6 +169,14 @@ a:active {
           flex: 0 0 100%;
 }
 
+/*
+主内容区，居中
+*/
+
+.main {
+  margin: 20px auto auto auto;
+}
+
 .button-blue {
   background-color: #67a7ff;
   color: #f5f5f5;
@@ -176,6 +186,23 @@ a:active {
   border-radius: 3px;
   display: inline-block;
   font-size: 1rem;
+}
+
+.button-red {
+  background-color: #ff604c;
+  color: #f5f5f5;
+  padding: 5px 10px;
+  margin: 4px 6px;
+  border: none;
+  border-radius: 3px;
+  display: inline-block;
+  font-size: 1rem;
+}
+
+.button-small {
+  padding: 3px 6px;
+  margin: 2px 3px;
+  font-size: 0.86rem;
 }
 
 /* --- Class --- */
@@ -200,5 +227,10 @@ a:active {
 
 .none-li {
   list-style-type: none;
+}
+
+.resource-bar {
+  margin: 20px auto auto auto;
+  width: 352px;
 }
 

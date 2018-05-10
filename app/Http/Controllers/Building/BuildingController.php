@@ -14,10 +14,15 @@ class BuildingController extends Controller
         $this->buildingService = $buildingService;
     }
 
-    public function buildingList()
+    public function buildingList($version)
     {
-        $list = Redis::get('buildingList');
+        if ($version !== config('params.version')) {
+            $list = json_decode(Redis::get('buildingList'), true);
+            $list['version'] = config('params.version');
 
-        return $list;
+            return $list;
+        }
+
+        return response('',304);
     }
 }

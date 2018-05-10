@@ -37,7 +37,7 @@ class InitializeController extends Controller
                         'food' => 1,
                     ],
                     'material' => [
-                        'word' => 10,
+                        'wood' => 10,
                     ],
                 ], [
                     'name' => '二级农田',
@@ -46,7 +46,7 @@ class InitializeController extends Controller
                         'food' => 1.2, // upper 20%
                     ],
                     'material' => [
-                        'word' => 13, // upper 30%
+                        'wood' => 13, // upper 30%
                     ],
                 ],
             ],
@@ -55,7 +55,7 @@ class InitializeController extends Controller
                     'name' => '一级伐木营地',
                     'level' => 1,
                     'product' => [
-                        'word' => 0.6,
+                        'wood' => 0.6,
                     ],
                     'material' => [
                         'money' => 10,
@@ -64,7 +64,7 @@ class InitializeController extends Controller
                     'name' => '二级伐木营地',
                     'level' => 2,
                     'product' => [
-                        'word' => 0.8, // upper 25%
+                        'wood' => 0.8, // upper 25%
                     ],
                     'material' => [
                         'money' => 14, // upper 40%
