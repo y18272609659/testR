@@ -1,17 +1,30 @@
 <template>
-    <div class="flex-row">
-        <div class="occupy2"></div> <!-- 2 -->
-        <div class="occupy2">
-            <ul class="none-li">
-                <li>人口：<span>{{ resource.people }}</span></li>
-                <li>食物：<span>{{ resource.food }}</span></li>
-                <li>木材：<span>{{ resource.wood }}</span></li>
-                <li>钱财：<span>{{ resource.money }}</span></li>
-            </ul>
+    <div>
+        <div class="flex-row">
+            <div class="occupy2"></div> <!-- 2 -->
+            <div class="occupy2">
+                <ul class="none-li">
+                    <li>人口：<span>{{ resource.people }}</span></li>
+                    <li>食物：<span>{{ resource.food }}</span></li>
+                    <li>木材：<span>{{ resource.wood }}</span></li>
+                    <li>钱财：<span>{{ resource.money }}</span></li>
+                </ul>
+            </div>
+            <div class="occupy13"></div>
+            <div class="occupy3">
+                <button class="button-blue" @click="init">重置</button>
+            </div>
         </div>
-        <div class="occupy14"></div>
-        <div class="occupy2">
-            <button class="button-blue" @click="init">重置</button>
+
+        <div class="flex-row">
+            <div class="occupy14" style="flex: 0 0 auto">
+                <ul class="none-li">
+                    <li>人口：<span>{{ resource.people }}</span></li>
+                    <li>食物：<span>{{ resource.food }}</span></li>
+                    <li>木材：<span>{{ resource.wood }}</span></li>
+                    <li>钱财：<span>{{ resource.money }}</span></li>
+                </ul>
+            </div>
         </div>
     </div>
 </template>

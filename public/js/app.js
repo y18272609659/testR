@@ -16881,6 +16881,19 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 
 
@@ -16964,39 +16977,71 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c("div", { staticClass: "flex-row" }, [
-    _c("div", { staticClass: "occupy2" }),
-    _vm._v(" "),
-    _c("div", { staticClass: "occupy2" }, [
-      _c("ul", { staticClass: "none-li" }, [
-        _c("li", [
-          _vm._v("人口："),
-          _c("span", [_vm._v(_vm._s(_vm.resource.people))])
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _vm._v("食物："),
-          _c("span", [_vm._v(_vm._s(_vm.resource.food))])
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _vm._v("木材："),
-          _c("span", [_vm._v(_vm._s(_vm.resource.wood))])
-        ]),
-        _vm._v(" "),
-        _c("li", [
-          _vm._v("钱财："),
-          _c("span", [_vm._v(_vm._s(_vm.resource.money))])
+  return _c("div", [
+    _c("div", { staticClass: "flex-row" }, [
+      _c("div", { staticClass: "occupy2" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "occupy2" }, [
+        _c("ul", { staticClass: "none-li" }, [
+          _c("li", [
+            _vm._v("人口："),
+            _c("span", [_vm._v(_vm._s(_vm.resource.people))])
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _vm._v("食物："),
+            _c("span", [_vm._v(_vm._s(_vm.resource.food))])
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _vm._v("木材："),
+            _c("span", [_vm._v(_vm._s(_vm.resource.wood))])
+          ]),
+          _vm._v(" "),
+          _c("li", [
+            _vm._v("钱财："),
+            _c("span", [_vm._v(_vm._s(_vm.resource.money))])
+          ])
+        ])
+      ]),
+      _vm._v(" "),
+      _c("div", { staticClass: "occupy13" }),
+      _vm._v(" "),
+      _c("div", { staticClass: "occupy3" }, [
+        _c("button", { staticClass: "button-blue", on: { click: _vm.init } }, [
+          _vm._v("重置")
         ])
       ])
     ]),
     _vm._v(" "),
-    _c("div", { staticClass: "occupy14" }),
-    _vm._v(" "),
-    _c("div", { staticClass: "occupy2" }, [
-      _c("button", { staticClass: "button-blue", on: { click: _vm.init } }, [
-        _vm._v("重置")
-      ])
+    _c("div", { staticClass: "flex-row" }, [
+      _c(
+        "div",
+        { staticClass: "occupy14", staticStyle: { flex: "0 0 auto" } },
+        [
+          _c("ul", { staticClass: "none-li" }, [
+            _c("li", [
+              _vm._v("人口："),
+              _c("span", [_vm._v(_vm._s(_vm.resource.people))])
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _vm._v("食物："),
+              _c("span", [_vm._v(_vm._s(_vm.resource.food))])
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _vm._v("木材："),
+              _c("span", [_vm._v(_vm._s(_vm.resource.wood))])
+            ]),
+            _vm._v(" "),
+            _c("li", [
+              _vm._v("钱财："),
+              _c("span", [_vm._v(_vm._s(_vm.resource.money))])
+            ])
+          ])
+        ]
+      )
     ])
   ])
 }
