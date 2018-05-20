@@ -17,14 +17,14 @@ Route::get('/', function () {
 
 // 通用
 Route::post('/register', 'Common\UserController@register');
-Route::post('/login', 'Common\UserController@login');
+Route::post('/login', 'Common\UserController@login')->middleware('resource.auto');
 Route::get ('/logout', 'Common\UserController@logout');
 
 // 领地
 Route::get ('/user/get-resource', 'Common\ResourceController@getMeResource');
 
 // 建筑
-Route::get ('/building/list', 'Building\BuildingController@buildingList');
+Route::get ('/building/list/{version}', 'Building\BuildingController@buildingList')->middleware('resource.auto');
 
 // 建筑
-Route::get ('/init/redis', 'Common\InitializeController@initRedis');
+Route::get ('/init/redis', 'Common\InitializeController@initRedis')->middleware('resource.auto');

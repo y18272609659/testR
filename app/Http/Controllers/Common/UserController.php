@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\User;
 use App\Service\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -21,43 +22,45 @@ class UserController extends Controller
      * 用户注册
      *
      * @param Request $request
-     * @return string
+     * @return array
      */
     public function register(Request $request)
     {
         $check = User::where('email', $request['email'])->exists();
 
         if (!$check) {
-            $result = User::create([
-                'name' => $request['nickname'],
+            $userPlant = config('params.userPlant');
+            $lastId = User::select('id')->orderby('id', 'desc')->first();
+            $id = $lastId->id + 1;
+            $capital = ceil($id / sqrt($userPlant)) * 3 - 1 . ',' . ((($id - 1) % sqrt($userPlant) + 1) * 3 - 1);
+            $info = User::create([
+                'nickname' => $request['nickname'],
                 'email' => $request['email'],
+                'kingdom' => $request['kingdom'],
+                'capital' => $capital,
                 'password' => Hash::make($request['password']),
             ]);
-        } else {
-            $result = '帐号已存在，您可以尝试找回密码。';
+
+            return [ 101, $info ];
         }
 
-        return $result;
+        return [ 201, '帐号已存在，找回它，或换一个吧。' ];
     }
 
     /**
      * 用户登录
      *
      * @param Request $request
-     * @return string
+     * @return array
      */
     public function login(Request $request)
     {
         if (Auth::check() || Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
             $model = User::find(Auth::id());
-            if (event(new Test($model))) {
-                return $this->UserService->getUser(Auth::id());
-            } else {
-                response('意外的错误，错误码：GO5WS1', 500);
-            }
+            return [ 101, $model ];
         }
 
-        return '帐号或密码错误，请检查后重试。';
+        return [ 201, '帐号或密码错误，请检查后重试。' ];
     }
 
     /**

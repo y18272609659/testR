@@ -1,12 +1,13 @@
 <template>
-    <el-row type="flex" justify="center">
-        <el-col :span="6">
+    <div class="flex-row main">
+        <div class="occupy5"></div>
+        <div class="occupy10">
             <div class="footer">
                 「自由小岛」© {{ site.start }} - {{ site.now }}
                 <br>{{ site.record }}
             </div>
-        </el-col>
-    </el-row>
+        </div>
+    </div>
 </template>
 
 <script>

@@ -4,22 +4,23 @@ use Faker\Generator;
 use Faker\Factory;
 
 /*
-|--------------------------------------------------------------------------
-| Model Factories
-|--------------------------------------------------------------------------
-|
-| This directory should contain each of the model factory definitions for
-| your application. Factories provide a convenient way to generate new
-| model instances for testing / seeding your application's database.
-|
+capital:
+    n*n player : n*3*n*3 block
+
+    1*1:3*3
+    2*2:6*6
+    3*3:9*9
+    4*4:12*12
+    5*5:15*15
 */
 
 $factory->define(App\User::class, function (Generator $faker) {
     static $password;
-    $userPlant = 25;
+
+    $userPlant = 10000;
+    $_COOKIE['id']++;
 
     return [
-        'name' => 'testUser' . ++$_COOKIE['id'],
         'nickname' => $faker->name,
         'email' => $faker->unique()->safeEmail,
         'password' => $password ?: $password = bcrypt('secret'),

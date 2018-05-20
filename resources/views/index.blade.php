@@ -12,6 +12,16 @@
         <link rel="stylesheet" href="{{ asset('css/app.css?v='.time()) }}">
     </head>
     <body>
+    @if (!Auth::check())
+        <script>
+          localStorage.clear();
+          localStorage.setItem('loginCheck', 'false');
+        </script>
+    @else
+        <script>
+          localStorage.setItem('loginCheck', 'true');
+        </script>
+    @endif
     <div id="app"></div>
     <script src="{{ asset('js/app.js?v='.time()) }}"></script>
     </body>

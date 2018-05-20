@@ -2,7 +2,7 @@
     <div id="app" class="container">
         <Header :user="user"/>
         <router-view></router-view>
-        <!--<Footer :site="site"/>-->
+        <Footer :site="site"/>
     </div>
 </template>
 
@@ -21,14 +21,33 @@
     data() {
       return {
         user: {
-          avatar: 'http://wx3.sinaimg.cn/mw690/0060lm7Tly1fr0t1qi5kxj301f01fmwy.jpg',
-          nickname: '没拿到数据啊朋友'
+          lord: '',
+          kingdom: '',
+          avatar: '',
         },
+        resource: {
+          people: 10,
+          food: 0,
+          wood: 0,
+          money: 0,
+        },
+        time: {
+          year: 1,
+          month: 1,
+          day: 1,
+        },
+        // footer
         site: {
           start: 2017,
-          now: new Date().getYear(),
+          now: new Date().getFullYear(),
           record: '邬ICP备 66666666号-1',
         }
+      }
+    },
+
+    props: {
+      userData: {
+        type: Object
       }
     },
 
