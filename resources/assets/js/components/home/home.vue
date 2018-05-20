@@ -7,6 +7,7 @@
                 <button class="button-blue" @click="init">重置</button>
             </div>
         </div>
+
         <div class="flex-row">
             <div class="occupy2">{{ user.lord }}</div>
             <div class="occupy12">

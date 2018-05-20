@@ -16,6 +16,7 @@ capital:
 
 $factory->define(App\User::class, function (Generator $faker) {
     static $password;
+
     $userPlant = 10000;
     $_COOKIE['id']++;
 
