@@ -21,10 +21,10 @@ Route::post('/login', 'Common\UserController@login')->middleware('resource.auto'
 Route::get ('/logout', 'Common\UserController@logout');
 
 // 领地
-Route::get ('/user/get-resource', 'Common\ResourceController@getMeResource');
+Route::get ('/user/get-resource', 'Common\ResourceController@getMeResource')->middleware('resource.auto');
 
 // 建筑
-Route::get ('/building/list/{version}', 'Building\BuildingController@buildingList')->middleware('resource.auto');
+Route::get ('/building/list/{version}', 'Building\BuildingController@buildingList');
 
-// 建筑
-Route::get ('/init/redis', 'Common\InitializeController@initRedis')->middleware('resource.auto');
+// 初始化
+Route::get ('/init/redis', 'Common\InitializeController@initRedis');

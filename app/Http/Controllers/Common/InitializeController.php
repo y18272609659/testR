@@ -33,41 +33,57 @@ class InitializeController extends Controller
                 [
                     'name' => '一级农田',
                     'level' => 1,
+                    'necessary' => 1,
                     'product' => [
                         'food' => 1,
                     ],
                     'material' => [
                         'wood' => 10,
                     ],
+                    'occupy' => [
+                        'people' => 1,
+                    ],
                 ], [
                     'name' => '二级农田',
                     'level' => 2,
+                    'necessary' => 1,
                     'product' => [
                         'food' => 1.2, // upper 20%
                     ],
                     'material' => [
                         'wood' => 13, // upper 30%
                     ],
+                    'occupy' => [
+                        'people' => 1,
+                    ],
                 ],
             ],
-            'logging' => [
+            'sawmill' => [
                 [
                     'name' => '一级伐木营地',
                     'level' => 1,
+                    'necessary' => 0,
                     'product' => [
                         'wood' => 0.6,
                     ],
                     'material' => [
                         'money' => 10,
                     ],
+                    'occupy' => [
+                        'people' => 1,
+                    ],
                 ], [
                     'name' => '二级伐木营地',
                     'level' => 2,
+                    'necessary' => 0,
                     'product' => [
-                        'wood' => 0.8, // upper 25%
+                        'wood' => 1.6, // upper 25%
                     ],
                     'material' => [
-                        'money' => 14, // upper 40%
+                        'money' => 28, // upper 40%
+                    ],
+                    'occupy' => [
+                        'people' => 2,
                     ],
                 ],
             ],

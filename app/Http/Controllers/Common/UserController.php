@@ -1,12 +1,12 @@
 <?php
 namespace App\Http\Controllers\Common;
 
-use App\Events\Test;
 use App\Http\Controllers\Controller;
+use App\Models\Building;
+use App\Models\Resource;
 use App\User;
 use App\Service\UserService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,13 +33,24 @@ class UserController extends Controller
             $lastId = User::select('id')->orderby('id', 'desc')->first();
             $id = $lastId->id + 1;
             $capital = ceil($id / sqrt($userPlant)) * 3 - 1 . ',' . ((($id - 1) % sqrt($userPlant) + 1) * 3 - 1);
-            $info = User::create([
+            $info['user'] = User::create([
                 'nickname' => $request['nickname'],
                 'email' => $request['email'],
                 'kingdom' => $request['kingdom'],
                 'capital' => $capital,
                 'password' => Hash::make($request['password']),
             ]);
+            $info['user'] = User::find($info['user']->id);
+
+            $info['building'] = Building::create([
+                'userId' => $info['user']->id,
+            ]);
+            $info['building'] = Building::find($info['building']->id);
+
+            $info['resource'] = Resource::create([
+                'userId' => $info['user']->id,
+            ]);
+            $info['resource'] = Resource::find($info['resource']->id);
 
             return [ 101, $info ];
         }
@@ -56,7 +67,10 @@ class UserController extends Controller
     public function login(Request $request)
     {
         if (Auth::check() || Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
-            $model = User::find(Auth::id());
+            $model['user'] = User::find(Auth::id());
+            $model['resource'] = Resource::where('userId', Auth::id())->first();
+            $model['building'] = Building::where('userId', Auth::id())->first();
+
             return [ 101, $model ];
         }
 

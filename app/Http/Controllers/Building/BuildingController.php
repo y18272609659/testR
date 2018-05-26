@@ -23,6 +23,6 @@ class BuildingController extends Controller
             return $list;
         }
 
-        return response('',304);
+        return response('客户端版本不符，无法获取相关数据',304);
     }
 }
