@@ -11,6 +11,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-         $this->call(UsersTableSeeder::class);
+        $this->call(UsersTableSeeder::class);
+
+        $init = new \App\Http\Controllers\Common\InitializeController();
+        $init->initRedis();
     }
 }

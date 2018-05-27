@@ -27,4 +27,4 @@ Route::get ('/user/get-resource', 'Common\ResourceController@getMeResource')->mi
 Route::get ('/building/list/{version}', 'Building\BuildingController@buildingList');
 
 // 初始化
-Route::get ('/init/redis', 'Common\InitializeController@initRedis');
+Route::get ('/reset/redis', 'Common\InitializeController@resetRedis');

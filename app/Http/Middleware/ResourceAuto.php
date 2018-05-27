@@ -19,8 +19,8 @@ class ResourceAuto
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure  $next
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
      * @return mixed
      */
     public function handle($request, Closure $next)
@@ -46,68 +46,147 @@ class ResourceAuto
      *  - 石块：各级采石设施产能相加，乘以劳动力满足系数
      *  - 钱财：（人口数量 * 0.1）+（各类商业设施产能相加，乘以劳动力满足系数）。
      */
-    protected function resourceUpdate() {
-        $manpower = 1;
-        $necessary = 1;
-        $peopleOccupy = [
-            'manpower' => 0,
-            'necessary' => 0,
-        ];
-
-        // 计算劳动力使用
-        $list = json_decode(Redis::get('buildingList'), true);
-        if (!$list) {
-            // 特殊情况，计入日志
-        }
-
-        $building = DB::select('SELECT * FROM buildings WHERE userId = ? LIMIT 1', [Auth::id()]) ?? new \stdClass();
-        $building = json_decode(json_encode($building[0]), true);
-        foreach ($building as $key => $value) {
-            $level = (int)substr($key, -2, 2);
-            if ($level === 0) {
-                continue;
-            }
-            $field = substr($key, 0, -2);
-
-            // 计算劳动力实际需求
-            $item = $list[$field][$level-1];
-            $item['occupy']['people'] = $item['occupy']['people'] ?? 0;
-            if ($item['necessary']) {
-                $peopleOccupy['necessary'] += $item['occupy']['people'] * $value;
-            } else {
-                $peopleOccupy['manpower'] += $item['occupy']['people'] * $value;
-            }
-        }
-
+    protected function resourceUpdate()
+    {
         $resource = Resource::find(['userId' => Auth::id()])[0];
+        $via = gameTimeUnit(time() - strtotime($resource->updated_at));
 
-        if ($peopleOccupy['necessary'] >= $resource->people) {
-            $necessary = $resource->people / $peopleOccupy['necessary'];
-            $manpower = 0;
-        } elseif ($peopleOccupy['manpower'] >= $resource->people - $peopleOccupy['necessary']) {
-            $manpower = ($resource->people - $peopleOccupy['necessary']) / $peopleOccupy['necessary'];
+        if ($via > 0.03333) {
+            $manpower = 1;
+            $necessary = 1;
+            $peopleOccupy = [
+                'manpower' => 0,
+                'necessary' => 0,
+            ];
+
+            /* 劳动力系数计算 */
+            // 计算劳动力使用
+            $list = json_decode(Redis::get('buildingList'), true);
+            if (!$list) {
+                // 特殊情况，计入日志
+            }
+
+            $building = DB::select('SELECT * FROM buildings WHERE userId = ? LIMIT 1', [Auth::id()]) ?? new \stdClass();
+            $building = json_decode(json_encode($building[0]), true);
+            foreach ($building as $key => $value) {
+                $level = (int)substr($key, -2, 2);
+                if ($level === 0) {
+                    continue;
+                }
+                $field = substr($key, 0, -2);
+
+                // 计算劳动力实际需求
+                $item = $list[$field][$level - 1];
+                $item['occupy']['people'] = $item['occupy']['people'] ?? 0;
+                if ($item['necessary']) {
+                    $peopleOccupy['necessary'] += $item['occupy']['people'] * $value;
+                } else {
+                    $peopleOccupy['manpower'] += $item['occupy']['people'] * $value;
+                }
+            }
+
+            // 计算劳动力系数
+            if ($peopleOccupy['necessary'] >= $resource->people) {
+                $necessary = $resource->people / $peopleOccupy['necessary'];
+                $manpower = 0;
+            } elseif ($peopleOccupy['manpower'] >= $resource->people - $peopleOccupy['necessary']) {
+                $manpower = ($resource->people - $peopleOccupy['necessary']) / $peopleOccupy['necessary'];
+            }
+
+            /* 资源叠加 */
+            $deplete = $resource->people * 0.1 * $via;
+            // 食物
+            $interim = $this->resourceUp([$resource->food, $resource->foodChip], $necessary, $resource->foodOutput, $via, 2, $deplete);
+            $resource->food = $interim['int'];
+            $resource->foodChip = $interim['chip'];
+
+            // 人口
+            $people = exploreTwo($resource->people * self::FERTILITY_RATE * $via);
+            $resource->people += $people[0];
+            $resource->child += $people[1];
+            if ($resource->food <= 0) {
+                $resource->food = 0;
+                $resource->child = 0;
+                $resource->people -= $resource->people * self::STARVE_RATE;
+            } elseif ($resource->child >= 1) {
+                $people = exploreTwo($resource->child);
+                $resource->people += $people[0];
+                $resource->child = $people[1];
+            }
+
+            // 木材
+            $interim = $this->resourceUp([$resource->wood, $resource->woodChip], $manpower, $resource->woodOutput, $via);
+            $resource->wood = $interim['int'];
+            $resource->woodChip = $interim['chip'];
+
+            // 石头
+            $interim = $this->resourceUp([$resource->stone, $resource->stoneChip], $manpower, $resource->stoneOutput, $via);
+            $resource->stone = $interim['int'];
+            $resource->stoneChip = $interim['chip'];
+
+            // 钱财
+            $interim = $this->resourceUp([$resource->money, $resource->moneyChip], $manpower, $resource->moneyOutput, $via, 1, $deplete);
+            $resource->money = $interim['int'];
+            $resource->moneyChip = $interim['chip'];
+
+            $resource->save();
+        }
+    }
+
+    /**
+     * 计算资源迭代后的实际内容
+     * @param array $item 包含整数与碎片资源的数组
+     * @param float $manpower (紧缺/非紧缺)劳动力系数
+     * @param float $output 资源产出
+     * @param float $via 时间长度
+     * @param int $operate 操作，从 1 至 2 分别为加减。默认为 0，无运算
+     * @param float $number 操作值，通过运算来计入相应的资源项
+     * @return array
+     */
+    protected function resourceUp(array $item, float $manpower, float $output, float $via, int $operate = 0, float $number = 0)
+    {
+        $item['int'] = $item[0];
+        $item['chip'] = $item[1];
+
+        $interim = exploreTwo($output * $manpower * $via);
+        $item['int'] += $interim[0] + intval($item['chip'] + $interim[1]);
+        $item['chip'] += $interim[1];
+
+        if (!$operate) {
+            if ($item['chip'] >= 1) {
+                $interim = exploreTwo($item['chip']);
+                $item['int'] += $interim[0];
+                $item['chip'] = $interim[1];
+            }
+        } else {
+            // 启动运算
+            $interim = exploreTwo($number);
+            if ($operate === 1) {
+                $item['int'] += $interim[0];
+                $item['chip'] += $interim[1];
+
+                if ($item['chip'] >= 1) {
+                    $interim = exploreTwo($item['chip']);
+                    $item['int'] += $interim[0];
+                    $item['chip'] = $interim[1];
+                }
+            } elseif ($operate === 2) {
+                $item['int'] -= $interim[0];
+                $item['chip'] -= $interim[1];
+
+                if ($item['chip'] >= 1 || $item['chip'] <= 0) {
+                    $interim = exploreTwo($item['chip']);
+                    $item['int'] += $interim[0];
+                    $item['chip'] = $interim[1];
+
+                    if ($item['chip'] < 0) {
+                        $item['int'] -= 1;
+                        $item['chip'] += 1;
+                    }
+                }
+            }
         }
 
-        // 资源叠加
-        $resource->food += $resource->foodOutput * $necessary - $resource->people * 0.1;
-
-        $people = explode('.', $resource->people * self::FERTILITY_RATE);
-        $resource->people += $people[0];
-        $resource->child += $people[1];
-        if ($resource->food <= 0) {
-            $resource->food = 0;
-            $resource->child = 0;
-            $resource->people -= $resource->people * self::STARVE_RATE;
-        } elseif ($resource->child >= 1) {
-            $people = explode('.', $resource->child)[0];
-            $resource->people += $people;
-            $resource->child -= $people;
-        }
-
-        $resource->wood += $resource->woodOutput * $manpower;
-        $resource->stone += $resource->stoneOutput * $manpower;
-        $resource->money += $resource->moneyOutput * $manpower + $resource->people * 0.1;
-
-        $resource->save();
+        return $item;
     }
 }

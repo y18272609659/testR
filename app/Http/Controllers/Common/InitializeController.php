@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Common;
 
 use App\Http\Controllers\Controller;
+use App\Models\System;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Redis;
@@ -11,14 +12,44 @@ class InitializeController extends Controller
 {
     public function initRedis()
     {
+        $this->resetRedis();
+
+        if (!Redis::set('timeGame', $this->getInitTime()) || !Redis::set('timeTruth', time()))
+            return response('任务失败，执行至 V82H7B 阶段。', 500);
+
+        return response('任务执行成功', 200);
+    }
+
+    public function resetRedis()
+    {
         $buildingList = json_encode($this->getBuildingList());
         if (!Redis::set('buildingList', $buildingList))
             return response('任务失败，执行至 V846C2 阶段。', 500);
+
         $armyList = json_encode($this->getArmyList());
         if (!Redis::set('armyList', $armyList))
-            return response('任务失败，执行至 V848VS 阶段。', 500);
+            return response('任务失败，执行至 V8J8VS 阶段。', 500);
 
         return response('任务执行成功', 200);
+    }
+
+    /**
+     * 获取游戏内的时间戳，15 秒为 1 天，每月均为 30 天
+     * @return int
+     */
+    protected function getInitTime()
+    {
+        $time = 4000000 + rand(1, 3000000);
+
+        $system = new System();
+
+        $system->pack = '创世';
+        $system->gameTime = $time;
+        $system->version = '0.01';
+
+        $system->save();
+
+        return $time;
     }
 
     /**
@@ -100,7 +131,8 @@ class InitializeController extends Controller
      * @param null $key
      * @return array|mixed
      */
-    protected function getArmyList($key = null) {
+    protected function getArmyList($key = null)
+    {
         return [];
     }
 }

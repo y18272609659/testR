@@ -16,16 +16,25 @@ class CreateResourcesTable extends Migration
         Schema::create('resources', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('userId');
+
             $table->unsignedInteger('people')->default(200); # 人口 - 成人
             $table->float('child', 5, 2)->default(0); # 人口 - 孩子
+
             $table->unsignedInteger('food')->default(3000); # 食物(Max: 40 亿)
-            $table->mediumInteger('foodOutput')->default(0); # 食物实际产出
+            $table->float('foodChip', 5, 4)->default(0); # 散碎
+            $table->mediumInteger('foodOutput')->default(0); # 实际产出
+
             $table->unsignedInteger('wood')->default(2000); # 木材
-            $table->mediumInteger('woodOutput')->default(0); # 木材实际产出
+            $table->float('woodChip', 5, 4)->default(0); # 散碎
+            $table->mediumInteger('woodOutput')->default(0); # 实际产出
+
             $table->unsignedInteger('stone')->default(1000); # 石块
-            $table->mediumInteger('stoneOutput')->default(0); # 石块实际产出
+            $table->float('stoneChip', 5, 4)->default(0); # 散碎
+            $table->mediumInteger('stoneOutput')->default(0); # 实际产出
+
             $table->unsignedInteger('money')->default(3500); # 钱财
-            $table->mediumInteger('moneyOutput')->default(0); # 钱财实际产出
+            $table->float('moneyChip', 5, 4)->default(0); # 散碎
+            $table->mediumInteger('moneyOutput')->default(0); # 实际产出
             $table->timestamps();
         });
     }
