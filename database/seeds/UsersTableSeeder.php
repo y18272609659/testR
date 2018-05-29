@@ -19,12 +19,12 @@ class UsersTableSeeder extends Seeder
                 function ($u) {
                     $_COOKIE['id'] = $u->id;
 
-                    $u->resource()->save(
-                        factory(App\Models\Resource::class)->make()
-                    );
-
                     $u->building()->save(
                         factory(App\Models\Building::class)->make()
+                    );
+
+                    $u->resource()->save(
+                        factory(App\Models\Resource::class)->make()
                     );
 //
 //                    foreach (range(1, 10) as $value) {

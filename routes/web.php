@@ -25,6 +25,8 @@ Route::get ('/user/get-resource', 'Common\ResourceController@getMeResource')->mi
 
 // 建筑
 Route::get ('/building/list/{version}', 'Building\BuildingController@buildingList');
+Route::post('/building/build', 'Building\BuildingController@build')->middleware('resource.auto');
+Route::post('/building/destroy', 'Building\BuildingController@destroy')->middleware('resource.auto');
 
 // 初始化
 Route::get ('/reset/redis', 'Common\InitializeController@resetRedis');

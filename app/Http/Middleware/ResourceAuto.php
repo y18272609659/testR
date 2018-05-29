@@ -12,9 +12,9 @@ use Illuminate\Support\Facades\Redis;
 class ResourceAuto
 {
     // 生育率（月）
-    const FERTILITY_RATE = 0.042;
+    const FERTILITY_RATE = 1.042;
     // 饥荒死亡率（月）
-    const STARVE_RATE = 0.06;
+    const STARVE_RATE = 0.94;
 
     /**
      * Handle an incoming request.
@@ -48,7 +48,7 @@ class ResourceAuto
      */
     protected function resourceUpdate()
     {
-        $resource = Resource::find(['userId' => Auth::id()])[0];
+        $resource = Resource::where('userId', Auth::id())->first();
         $via = gameTimeUnit(time() - strtotime($resource->updated_at));
 
         if ($via > 0.03333) {
@@ -100,18 +100,23 @@ class ResourceAuto
             $resource->food = $interim['int'];
             $resource->foodChip = $interim['chip'];
 
+            // todo: 根据食物产出，抵消一定程度的饿死
             // 人口
-            $people = exploreTwo($resource->people * self::FERTILITY_RATE * $via);
-            $resource->people += $people[0];
+            $initPeople = $resource->people;
+
+            $people = exploreTwo($initPeople * pow(self::FERTILITY_RATE, $via));
             $resource->child += $people[1];
             if ($resource->food <= 0) {
                 $resource->food = 0;
                 $resource->child = 0;
-                $resource->people -= $resource->people * self::STARVE_RATE;
-            } elseif ($resource->child >= 1) {
-                $people = exploreTwo($resource->child);
-                $resource->people += $people[0];
-                $resource->child = $people[1];
+                $resource->people = intval($initPeople * pow(self::STARVE_RATE, $via) + $initPeople - $people[0]);
+            } else {
+                $resource->people = $people[0];
+                if ($resource->child >= 1) {
+                    $people = exploreTwo($resource->child);
+                    $resource->people += $people[0];
+                    $resource->child = $people[1];
+                }
             }
 
             // 木材

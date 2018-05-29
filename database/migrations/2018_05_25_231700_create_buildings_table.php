@@ -16,10 +16,10 @@ class CreateBuildingsTable extends Migration
         Schema::create('buildings', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('userId');
-            $table->unsignedMediumInteger('farm01')->default(20);
-            $table->unsignedMediumInteger('farm02')->default(2);
-            $table->unsignedMediumInteger('sawmill01')->default(10);
-            $table->unsignedMediumInteger('sawmill02')->default(5);
+            $table->unsignedMediumInteger('farm01')->default(0);
+            $table->unsignedMediumInteger('farm02')->default(0);
+            $table->unsignedMediumInteger('sawmill01')->default(0);
+            $table->unsignedMediumInteger('sawmill02')->default(0);
             $table->timestamps();
         });
     }

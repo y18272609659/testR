@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Common;
 use App\Http\Controllers\Controller;
 use App\Models\Building;
 use App\Models\Resource;
+use App\Models\System;
 use App\User;
 use App\Service\UserService;
 use Illuminate\Http\Request;
@@ -52,6 +53,8 @@ class UserController extends Controller
             ]);
             $info['resource'] = Resource::find($info['resource']->id);
 
+            $info['system'] = System::orderBy('id', 'desc')->take(1)->get();
+
             return [ 101, $info ];
         }
 
@@ -67,11 +70,12 @@ class UserController extends Controller
     public function login(Request $request)
     {
         if (Auth::check() || Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
-            $model['user'] = User::find(Auth::id());
-            $model['resource'] = Resource::where('userId', Auth::id())->first();
-            $model['building'] = Building::where('userId', Auth::id())->first();
+            $info['user'] = User::find(Auth::id());
+            $info['resource'] = Resource::where('userId', Auth::id())->first();
+            $info['building'] = Building::where('userId', Auth::id())->first();
+            $info['system'] = System::orderBy('id', 'desc')->first();
 
-            return [ 101, $model ];
+            return [ 101, $info ];
         }
 
         return [ 201, '帐号或密码错误，请检查后重试。' ];
