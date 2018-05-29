@@ -6,7 +6,7 @@ use App\Http\Requests\BuildingPost;
 use App\Models\Building;
 use App\Models\Resource;
 use App\Service\BuildingService;
-use Illuminate\Http\Request;
+use App\Service\LogService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +16,14 @@ class BuildingController extends Controller
 {
     const RETURN_RATE = 0.35;
 
-    public function __construct(BuildingService $buildingService)
+    protected $buildingService;
+    protected $logService;
+
+    public function __construct(LogService $logService, BuildingService $buildingService)
     {
         $this->middleware('auth');
         $this->buildingService = $buildingService;
+        $this->logService = $logService;
     }
 
     public function buildingList($version)
@@ -39,7 +43,7 @@ class BuildingController extends Controller
         $post->number = $post->number ?? 1;
         $item = json_decode(Redis::get('buildingList'), true);
         if (!$item) {
-            // todo: write log.
+            $this->logService::common('未获取到 Redis 缓存的建筑列表', 404, '\App\Http\Controllers\Building\BuildingController::build', 'Error');
         }
         $item = $item[$post->type][$post->level - 1];
 
@@ -89,8 +93,7 @@ class BuildingController extends Controller
                 return [ 203, '因未预料的意外，建筑失败' ];
             }
         } catch (\Exception $exception) {
-            // todo: write log
-            $logID = 'Bbs' . 1;
+            $logID = 'Bbs' . $this->logService::common('拆除失败', 500, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
             return response('意外情况，编号：' . $logID, 500);
         }
     }
@@ -100,7 +103,7 @@ class BuildingController extends Controller
         $post->number = $post->number ?? 1;
         $item = json_decode(Redis::get('buildingList'), true);
         if (!$item) {
-            // todo: write log.
+            $this->logService::common('未获取到 Redis 缓存的建筑列表', 404, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
         }
         $item = $item[$post->type][$post->level - 1];
         // 检测建筑数量，数量满足则扣除建筑
@@ -142,8 +145,7 @@ class BuildingController extends Controller
                 return [ 203, '因未预料的意外，拆除失败' ];
             }
         } catch (\Exception $exception) {
-            // todo: write log
-            $logID = 'Bds' . 1;
+            $logID = 'Bds' . $this->logService::common('拆除失败', 500, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
             return response('意外情况，编号：' . $logID, 500);
         }
     }

@@ -5,6 +5,7 @@ namespace App;
 use App\Models\Resource;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -34,5 +35,19 @@ class User extends Authenticatable
 
     public function building() {
         return $this->hasOne(Resource::class, 'userId', 'id');
+    }
+
+    /**
+     * 获取用户 ID
+     *
+     * @return int 未登录为 0
+     */
+    static function getUserId()
+    {
+        if (Auth::check()) {
+            return Auth::id();
+        }
+
+        return 0;
     }
 }

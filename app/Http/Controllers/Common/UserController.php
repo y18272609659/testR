@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Building;
 use App\Models\Resource;
 use App\Models\System;
+use App\Service\LogService;
 use App\User;
 use App\Service\UserService;
 use Illuminate\Http\Request;
@@ -14,9 +15,13 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function __construct(UserService $UserService)
+    protected $userService;
+    protected $logService;
+
+    public function __construct(UserService $userService, LogService $logService)
     {
-        $this->UserService = $UserService;
+        $this->userService = $userService;
+        $this->logService = $logService;
     }
 
     /**
@@ -41,6 +46,9 @@ class UserController extends Controller
                 'capital' => $capital,
                 'password' => Hash::make($request['password']),
             ]);
+
+            $this->logService::signUpOrIn('注册成功', 101, false);
+
             $info['user'] = User::find($info['user']->id);
 
             $info['building'] = Building::create([
@@ -70,6 +78,7 @@ class UserController extends Controller
     public function login(Request $request)
     {
         if (Auth::check() || Auth::attempt(['email' => $request['email'], 'password' => $request['password']])) {
+            $this->logService::signUpOrIn('登录成功', 101);
             $info['user'] = User::find(Auth::id());
             $info['resource'] = Resource::where('userId', Auth::id())->first();
             $info['building'] = Building::where('userId', Auth::id())->first();
