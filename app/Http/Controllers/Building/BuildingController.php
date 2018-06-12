@@ -14,8 +14,6 @@ use Illuminate\Support\Facades\Redis;
 
 class BuildingController extends Controller
 {
-    const RETURN_RATE = 0.35;
-
     protected $buildingService;
     protected $logService;
 
@@ -26,127 +24,83 @@ class BuildingController extends Controller
         $this->logService = $logService;
     }
 
+    /**
+     *
+     *
+     * @param $version
+     * @return \Illuminate\Contracts\Routing\ResponseFactory|mixed|\Symfony\Component\HttpFoundation\Response
+     */
     public function buildingList($version)
     {
-        if ($version !== config('params.version')) {
-            $list = json_decode(Redis::get('buildingList'), true);
-            $list['version'] = config('params.version');
+        if ($version !== config('params.version'))
+            return response('客户端版本不符，无法获取相关数据', 304);
 
-            return $list;
-        }
+        $list = json_decode(Redis::get('buildingList'), true);
+        $list['version'] = config('params.version');
 
-        return response('客户端版本不符，无法获取相关数据',304);
+        return $list;
     }
 
+    /**
+     * 建筑动工
+     *
+     * @param BuildingPost $post
+     * @return array
+     */
     public function build(BuildingPost $post)
     {
-        $post->number = $post->number ?? 1;
-        $item = json_decode(Redis::get('buildingList'), true);
-        if (!$item) {
-            $this->logService::common('未获取到 Redis 缓存的建筑列表', 404, '\App\Http\Controllers\Building\BuildingController::build', 'Error');
-        }
-        $item = $item[$post->type][$post->level - 1];
-
-        // 检测资源数量
-        $resource = Resource::where('userId', Auth::id())->first();
-
-        // 扣除资源
-        foreach ($item['material'] as $key => $value) {
-            $deplete = $value * $post->number;
-            if ($resource->$key < $deplete)
-                return [ 201, '资源不足' ];
-
-            $resource->$key -= $deplete;
-        }
-
-        // 扣除占用
-        foreach ($item['occupy'] as $key => $value) {
-            $deplete = $value * $post->number;
-            if ($resource->$key < $deplete)
-                return [ 202, '资源不足' ];
-
-            $resource->$key -= $deplete;
-        }
-
-        // 增加建筑数量
-        $building = Building::where('userId', Auth::id())->first();
-
-        if ($post->level < 10)
-            $post->level = '0' . $post->level;
-        $buildingName = $post->type . $post->level;
-
-        $building->$buildingName += $post->number;
-
-        // 增加产出
-        foreach ($item['product'] as $key => $value) {
-            $itemName = $key . 'Output';
-            $resource->$itemName += $value * $post->number;
-        }
-
-        DB::beginTransaction();
-        try {
-            if ($resource->save() && $building->save()) {
-                DB::commit();
-                return [ 101, '建筑完成' ]; // todo: 任务队列
-            } else {
-                DB::rollBack();
-                return [ 203, '因未预料的意外，建筑失败' ];
-            }
-        } catch (\Exception $exception) {
-            $logID = 'Bbs' . $this->logService::common('拆除失败', 500, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
-            return response('意外情况，编号：' . $logID, 500);
-        }
+        return $this->buildingService->buildBefore($post->type, $post->level, $post->number);
     }
 
-    public function destroy(BuildingPost $post)
+    /**
+     * 检查建筑队列并执行
+     * @return array
+     */
+    public function schedule()
     {
-        $post->number = $post->number ?? 1;
-        $item = json_decode(Redis::get('buildingList'), true);
-        if (!$item) {
-            $this->logService::common('未获取到 Redis 缓存的建筑列表', 404, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
-        }
-        $item = $item[$post->type][$post->level - 1];
-        // 检测建筑数量，数量满足则扣除建筑
-        $building = Building::where('userId', Auth::id())->first();
+        $schedule = json_decode(Redis::get(getUserKey('buildList')), true);
+        if (!$schedule)
+            return [ 102, '队列为空' ];
 
-        if ($post->level < 10)
-            $post->level = '0' . $post->level;
-        $buildingName = $post->type . $post->level;
-
-        if ($building->$buildingName < $post->number) {
-            return [ 201, '建筑数量不足' ];
-        }
-        $building->$buildingName -= $post->number;
-
-        $resource = Resource::where('userId', Auth::id())->first();
-        // 降低产出
-        foreach ($item['product'] as $key => $value) {
-            $itemName = $key . 'Output';
-            $resource->$itemName -= $value * $post->number;
-        }
-
-        // 降低（解除）占用
-        foreach ($item['occupy'] as $key => $value) {
-            $resource->$key += $value * $post->number;
-        }
-
-        // 增加资源
-        foreach ($item['material'] as $key => $value) {
-            $resource->$key += intval($value * $post->number * self::RETURN_RATE);
-        }
-
-        DB::beginTransaction();
-        try {
-            if ($resource->save() && $building->save()) {
-                DB::commit();
-                return [ 101, '拆除完成' ]; // todo: 任务队列
-            } else {
-                DB::rollBack();
-                return [ 203, '因未预料的意外，拆除失败' ];
+        $schedule = exploreSchedule($schedule);
+        foreach ($schedule as $item) {
+            if ($item['endTime'] <= time()) {
+                $result = $this->buildingService->build($item['type'], $item['level'], $item['number']);
+                if ($result[0] >= 200)
+                    return $result;
             }
-        } catch (\Exception $exception) {
-            $logID = 'Bds' . $this->logService::common('拆除失败', 500, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
-            return response('意外情况，编号：' . $logID, 500);
         }
+
+        return [101, $schedule];
+    }
+
+    /**
+     * 取消建筑
+     *
+     * @param $name
+     * @return array
+     */
+    public function recall($name)
+    {
+        return $this->buildingService->buildRecall(trim($name));
+    }
+
+    /**
+     * 拆除建筑
+     *
+     * @param string $name
+     * @return array
+     */
+    public function destroy(string $name)
+    {
+        $schedules = json_decode(Redis::get(getUserKey('buildList')), true);
+        if (count($schedules) === 0) {
+            return [101, '施工队都在忙碌'];
+        } elseif (empty($schedule[$name])) {
+            return [101, '该施工项目已完成'];
+        }
+        $schedule = exploreSchedule($schedules, $name);
+
+        return $this->buildingService->destroy($schedule['type'], $schedule['level'], $schedule['number']);
     }
 }

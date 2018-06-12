@@ -26,17 +26,12 @@ class UsersTableSeeder extends Seeder
                     $u->resource()->save(
                         factory(App\Models\Resource::class)->make()
                     );
-//
-//                    foreach (range(1, 10) as $value) {
-//                        $u->mission()->save(
-//                            factory(App\Mission::class)->make()
-//                        );
-//                    }
-//                    foreach (range(1, 4) as $value) {
-//                        $u->tomatoStatistic()->save(
-//                            factory(App\TomatoStatistic::class)->make()
-//                        );
-//                    }
+
+                    foreach (range(1, 3) as $value) {
+                        $u->buildingList()->save(
+                            factory(App\Models\BuildingList::class)->make()
+                        );
+                    }
                 }
             );
     }

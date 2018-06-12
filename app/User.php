@@ -2,6 +2,8 @@
 
 namespace App;
 
+use App\Models\Building;
+use App\Models\BuildingList;
 use App\Models\Resource;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -34,7 +36,11 @@ class User extends Authenticatable
     }
 
     public function building() {
-        return $this->hasOne(Resource::class, 'userId', 'id');
+        return $this->hasOne(Building::class, 'userId', 'id');
+    }
+
+    public function buildingList() {
+        return $this->hasMany(BuildingList::class, 'userId', 'id');
     }
 
     /**

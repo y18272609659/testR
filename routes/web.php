@@ -25,8 +25,11 @@ Route::get ('/user/get-resource', 'Common\ResourceController@getMeResource')->mi
 
 // 建筑
 Route::get ('/building/list/{version}', 'Building\BuildingController@buildingList');
+Route::get ('/building/schedule', 'Building\BuildingController@schedule')->middleware('resource.auto');
+
 Route::post('/building/build', 'Building\BuildingController@build')->middleware('resource.auto');
-Route::post('/building/destroy', 'Building\BuildingController@destroy')->middleware('resource.auto');
+Route::get ('/building/recall/{name}', 'Building\BuildingController@recall')->middleware('resource.auto');
+Route::get ('/building/destroy/{name}', 'Building\BuildingController@destroy')->middleware('resource.auto');
 
 // 初始化
 Route::get ('/reset/redis', 'Common\InitializeController@resetRedis');

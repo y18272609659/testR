@@ -27,7 +27,7 @@ class ResourceAuto
     {
         if (!Auth::check()) {
             $response = $next($request);
-            $this->resourceUpdate();
+            if (Auth::check()) $this->resourceUpdate();
         } else {
             $this->resourceUpdate();
             $response = $next($request);
@@ -86,10 +86,13 @@ class ResourceAuto
             }
 
             // 计算劳动力系数
-            if ($peopleOccupy['necessary'] >= $resource->people) {
+            if ($resource->people === 0) {
+                $necessary = 0;
+                $manpower = 0;
+            } elseif ($peopleOccupy['necessary'] >= $resource->people) {
                 $necessary = $resource->people / $peopleOccupy['necessary'];
                 $manpower = 0;
-            } elseif ($peopleOccupy['manpower'] >= $resource->people - $peopleOccupy['necessary']) {
+            } elseif ($peopleOccupy['manpower'] && $peopleOccupy['manpower'] >= $resource->people - $peopleOccupy['necessary']) {
                 $manpower = ($resource->people - $peopleOccupy['necessary']) / $peopleOccupy['necessary'];
             }
 
@@ -110,6 +113,9 @@ class ResourceAuto
                 $resource->food = 0;
                 $resource->child = 0;
                 $resource->people = intval($initPeople * pow(self::STARVE_RATE, $via) + $initPeople - $people[0]);
+                if ($resource->people < 0) {
+                    $resource->people = 0;
+                }
             } else {
                 $resource->people = $people[0];
                 if ($resource->child >= 1) {

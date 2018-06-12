@@ -28,6 +28,7 @@ class LogService
         $log->category = $category;
         $log->localization = $localization;
         $log->userId = $userId;
+        $log->uri = addslashes($_SERVER['REQUEST_URI']);
         $log->ip = $_SERVER['REMOTE_ADDR'];
 
         if ($log->save()) {
