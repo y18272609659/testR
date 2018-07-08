@@ -13,9 +13,13 @@
 <script>
   export default {
     name: "vFooter",
-    props: {
-      site: {
-        type: Object
+    data() {
+      return {
+        site: {
+          start: 2017,
+          now: new Date().getFullYear(),
+          record: '萌ICP备 66666666号-1',
+        }
       }
     }
   }

@@ -46,6 +46,7 @@
     name: "Outside",
     data() {
       return {
+        params: params,
         firstForm: {
           nickname: '',
           kingdom: '',
@@ -53,47 +54,39 @@
           password: '',
         },
         rules: {
-          email: [
-            {required: true, message: '登录必填'}
-          ],
-          password: [
-            {required: true, message: '登录必填'}
-          ],
+          email: [{required: true, message: '登录必填'}],
+          password: [{required: true, message: '登录必填'}],
         }
       }
     },
     methods: {
       submitForm: function (formName) {
         this.$refs[formName].validate((valid) => {
-          if (valid) {
-            let url = '/login'
-            if (this.firstForm.nickname !== '') {
-              url = '/register'
-            }
+          let url = '/login'
+          if (this.firstForm.nickname !== '') {
+            url = '/register'
+          }
 
-            this.$http.post(url, this.firstForm).then(response => {
-              response = response.body
-              if (response[0] === 101) {
-                localStorage.setItem('user', response[1])
-                window.location.href = 'www.nice-kingdom.com'
-              } else {
-                Swal({
-                  text: response[1],
-                  type: 'error',
-                })
-              }
-            }, response => {
+          this.$http.post(url, this.firstForm).then(response => {
+            response = response.body
+            if (response[0] === 101) {
+              localStorage.setItem('user', JSON.stringify(response[1]))
+              window.location.href = params.mainSite
+            } else {
               Swal({
-                text: '服务器错误，去群里反映一下吧',
+                text: response[1],
                 type: 'error',
               })
+            }
+          }, response => {
+            Swal({
+              text: '无法完成任务，服务器错误',
+              type: 'error',
             })
-          } else {
-            return
-          }
+          })
         });
-      }
-    }
+      },
+    },
   }
 </script>
 

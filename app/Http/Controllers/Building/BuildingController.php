@@ -3,13 +3,9 @@
 namespace App\Http\Controllers\Building;
 
 use App\Http\Requests\BuildingPost;
-use App\Models\Building;
-use App\Models\Resource;
 use App\Service\BuildingService;
 use App\Service\LogService;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 
 class BuildingController extends Controller
@@ -25,7 +21,8 @@ class BuildingController extends Controller
     }
 
     /**
-     *
+     * 获取建筑列表
+     * 本接口需要校验客户端版本，针对本地 JS 的意外旧缓存情况
      *
      * @param $version
      * @return \Illuminate\Contracts\Routing\ResponseFactory|mixed|\Symfony\Component\HttpFoundation\Response
@@ -33,7 +30,7 @@ class BuildingController extends Controller
     public function buildingList($version)
     {
         if ($version !== config('params.version'))
-            return response('客户端版本不符，无法获取相关数据', 304);
+            return response('客户端版本不符，无法获取相关数据', 403);
 
         $list = json_decode(Redis::get('buildingList'), true);
         $list['version'] = config('params.version');

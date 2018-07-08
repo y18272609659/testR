@@ -48,12 +48,11 @@
           delete response.version
           this.building = response
         }, response => {
-          if (response.status !== 304) {
-            Swal({
-              type: 'error',
-              text: '服务器错误，进群了解一下吧'
-            })
-          }
+          let info = (response.status !== 403) ? '服务器错误，进群了解一下吧' : response.bodyText;
+          Swal({
+            type: 'error',
+            text: info
+          })
           delete buildingList.version
           this.building = buildingList
         })

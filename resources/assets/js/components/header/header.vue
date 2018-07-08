@@ -6,11 +6,13 @@
                 <a :href="item.to" class="menu-item">{{ item.text }}</a>
             </span>
         </div>
-        <div class="avatar"></div>
+        <div class="avatar" @click="logout"></div>
     </div>
 </template>
 
 <script>
+  import Swal from 'sweetalert2'
+
   export default {
     name: "Header",
     data() {
@@ -27,16 +29,42 @@
         ],
       }
     },
-    props: {
-      user: {
-        type: Object
-      }
-    },
     methods: {
       choiceMenu(selectId) {
         this.menu[this.menu[0].last].class = 'menu-unactive';
         this.menu[0].last = selectId;
         this.menu[selectId].class = 'menu-active';
+      },
+      logout() {
+        Swal({
+          title: '注销？',
+          text: "点「确定」，你将离开领主的世界",
+          type: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then((result) => {
+          if (result.value) {
+            this.$http.get(`/logout`).then(response => {
+              Swal(
+                '朋友，Bye!',
+                '祝你在「现实Online」中得到你想要的生活，愿你幸福。',
+                'success'
+              )
+            }, response => {
+              Swal(
+                'Fish!',
+                '祝你在「现实Online」中得到你想要的生活，愿你幸福。',
+                'success'
+              )
+            })
+            setInterval(function () {
+              window.location.href="http://nice-kingdom.com";
+            }, 3e3)
+          }
+        })
       }
     },
     created() {
@@ -51,6 +79,7 @@
         ]
       }
 
+      // 确定选中菜单
       let preg = /#\/(.+)/i;
       let url = window.location.href;
       let result = url.match(preg)

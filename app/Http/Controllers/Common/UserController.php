@@ -36,7 +36,6 @@ class UserController extends Controller
     public function register(Request $request)
     {
         $m = new BuildingList();
-        var_dump($m->getTable());exit;
         $check = User::where('email', $request['email'])->exists();
 
         if (!$check) {

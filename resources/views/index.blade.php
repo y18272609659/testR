@@ -12,6 +12,13 @@
         <link rel="stylesheet" href="{{ asset('css/app.css?v='.time()) }}">
     </head>
     <body>
+    <script>
+        const params = {
+          // mainSite: 'http://127.0.0.1:8000',
+          mainSite: 'http://www.nice-kingdom.com',
+        }
+    </script>
+
     @if (!Auth::check())
         <script>
           localStorage.clear();
@@ -22,7 +29,9 @@
           localStorage.setItem('loginCheck', 'true');
         </script>
     @endif
+
     <div id="app"></div>
+
     <script src="{{ asset('js/app.js?v='.time()) }}"></script>
     </body>
 </html>

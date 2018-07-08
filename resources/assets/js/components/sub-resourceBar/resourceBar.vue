@@ -7,25 +7,14 @@
 <script>
   export default {
     name: "ResourceBar",
-    data() {
-      return {
-        resourceName: {
-          'people': '人口',
-          'food': '食物',
-          'wood': '木材',
-          'money': '钱财',
-          'stone': '石块',
-        }
-      }
+    computed: {
+      resourceName () {
+        return this.$store.state.resourceName
+      },
+      resource () {
+        return this.$store.state.resource
+      },
     },
-    props: {
-      resource: {
-        type: Object
-      }
-    },
-    // mounted: function () {
-    //   console.info(this.resource)
-    // }
   }
 </script>
 

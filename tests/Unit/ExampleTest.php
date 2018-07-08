@@ -2,6 +2,7 @@
 
 namespace Tests\Unit;
 
+use Illuminate\Support\Facades\Redis;
 use Tests\TestCase;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -12,8 +13,10 @@ class ExampleTest extends TestCase
      *
      * @return void
      */
-    public function testBasicTest()
+    public function Test()
     {
+        $key = getUserKey('buildList');
+//        $ = json_decode(Redis::get($key), true);
         $this->assertTrue(true);
     }
 }
