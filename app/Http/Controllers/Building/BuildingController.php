@@ -7,6 +7,7 @@ use App\Service\BuildingService;
 use App\Service\LogService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
+use Symfony\Component\HttpFoundation\Response;
 
 class BuildingController extends Controller
 {
@@ -27,13 +28,9 @@ class BuildingController extends Controller
      * @param $version
      * @return \Illuminate\Contracts\Routing\ResponseFactory|mixed|\Symfony\Component\HttpFoundation\Response
      */
-    public function buildingList($version)
+    public function buildingList()
     {
-        if ($version !== config('params.version'))
-            return response('客户端版本不符，无法获取相关数据', 403);
-
         $list = json_decode(Redis::get('buildingList'), true);
-        $list['version'] = config('params.version');
 
         return $list;
     }
@@ -74,7 +71,7 @@ class BuildingController extends Controller
     /**
      * 取消建筑
      *
-     * @param $name
+     * @param string $name 队列名称
      * @return array
      */
     public function recall($name)
@@ -85,7 +82,7 @@ class BuildingController extends Controller
     /**
      * 拆除建筑
      *
-     * @param string $name
+     * @param string $name 队列名称
      * @return array
      */
     public function destroy(string $name)

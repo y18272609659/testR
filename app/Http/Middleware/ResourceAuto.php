@@ -197,6 +197,8 @@ class ResourceAuto
                 }
             }
         }
+        unset($item[0]);
+        unset($item[1]);
 
         return $item;
     }

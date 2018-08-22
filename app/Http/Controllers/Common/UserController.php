@@ -103,10 +103,10 @@ class UserController extends Controller
 
             $info['system'] = System::orderBy('id', 'desc')->take(1)->get();
 
-            return [ 101, $info ];
+            return $info;
         }
 
-        return [ 201, '帐号已存在，找回它，或换一个吧。' ];
+        return response('帐号已存在，找回它，或换一个吧', 400);
     }
 
     /**
@@ -132,10 +132,10 @@ class UserController extends Controller
 
             $this->userService->checkRedis();
 
-            return [ 101, $info ];
+            return $info;
         }
 
-        return [ 201, '帐号或密码错误，请检查后重试。' ];
+        return response('帐号或密码错误，请检查后重试', 400);
     }
 
     /**
@@ -148,6 +148,6 @@ class UserController extends Controller
         Auth::logout();
         Session::flush();
 
-        return redirect('/');
+//        return redirect('/');
     }
 }

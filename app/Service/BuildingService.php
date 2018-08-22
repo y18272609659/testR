@@ -198,7 +198,7 @@ class BuildingService
                 return [ 203, '因未预料的意外，建筑失败' ];
             }
         } catch (\Exception $exception) {
-            $logID = 'Bbs' . logService::common('拆除失败', 500, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
+            $logID = 'Bbs' . logService::common('建筑失败', 500, '\App\Http\Controllers\Building\BuildingController::destroy', 'Error');
             return response('意外情况，编号：' . $logID, 500);
         }
     }

@@ -11,6 +11,7 @@ write .env, completar APP_KEY & DB_* & REDIS_* & MAIL_*
 run `php artisan migrate --seed`
 run `php artisan serve`
 run `npm run watch`
+run `sass --watch resources/assets/sass:public/css`
 # unit test (needle)
 go to 127.0.0.1:8000
 ```
